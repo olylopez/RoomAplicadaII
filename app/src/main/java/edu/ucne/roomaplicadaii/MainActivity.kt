@@ -121,6 +121,7 @@ class MainActivity : ComponentActivity() {
                                                     sueldoHora = sueldoHora.toDoubleOrNull() ?: 0.0
                                                 )
                                             )
+                                            tecnicoId = ""
                                             nombres = ""
                                             sueldoHora = ""
 
