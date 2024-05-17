@@ -18,18 +18,39 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.w3c.dom.Text
 
 @Composable
 fun TecnicoListScreen(
-    tecnicos: List<TecnicoEntity>,
+    viewModel: TecnicoViewModel,
     onVerTecnico: (TecnicoEntity) -> Unit,
     onDeleteTecnido: (TecnicoEntity) -> Unit
+
 ) {
+    val tecnicos by viewModel.tecnicos.collectAsStateWithLifecycle()
+    TecnicoListBory(
+        tecnicos = tecnicos,
+        onVerTecnico = onVerTecnico,
+        onDeleteTecnido = onDeleteTecnido
+    )
+}
+
+@Composable
+fun TecnicoListBory(
+    tecnicos: List<TecnicoEntity>,
+    onDeleteTecnido: (TecnicoEntity) -> Unit,
+    onVerTecnico: (TecnicoEntity) -> Unit
+
+    ){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +69,10 @@ fun TecnicoListScreen(
                 ) {
                     Text(text = tecnico.tecnicoId.toString(), modifier = Modifier.weight(0.10f))
                     Text(text = tecnico.nombres, modifier = Modifier.weight(0.400f))
-                    Text(text = " -RD " + tecnico.sueldoHora.toString(), modifier = Modifier.weight(0.40f))
+                    Text(
+                        text = " -RD " + tecnico.sueldoHora.toString(),
+                        modifier = Modifier.weight(0.40f)
+                    )
                     IconButton(
                         onClick = { onDeleteTecnido(tecnico) },
                         content = {

@@ -30,6 +30,9 @@ import androidx.lifecycle.lifecycleScope
 import edu.ucne.roomaplicadaii.data.local.database.TecnicoDb
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.presentation.TecnicoListScreen
+import edu.ucne.roomaplicadaii.presentation.TecnicoScreen
+import edu.ucne.roomaplicadaii.presentation.TecnicoViewModel
+import edu.ucne.roomaplicadaii.repository.TecnicoRepository
 import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -54,113 +57,38 @@ class MainActivity : ComponentActivity() {
         )
             .fallbackToDestructiveMigration()
             .build()
-
+        val repository = TecnicoRepository(tecnicoDb.tecnicoDao())
         enableEdgeToEdge()
         setContent {
             RoomAplicadaIITheme {
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .padding(8.dp)
-                    ) {
-                        var tecnicoId by remember { mutableStateOf("") }
-                        var nombres by remember { mutableStateOf("") }
-                        var sueldoHora by remember { mutableStateOf("") }
-
-                        ElevatedCard(
-                            modifier = Modifier.fillMaxWidth(),
+                Surface {
+                    val viewModel: TecnicoViewModel = viewModel(
+                        factory = TecnicoViewModel.provideFactory(repository)
+                    )
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                                .padding(8.dp)
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                OutlinedTextField(
-                                    label = { Text(text = "Nombres") },
-                                    value = nombres,
-                                    onValueChange = { nombres = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
+                            TecnicoScreen(viewModel = viewModel)
+                            TecnicoListScreen(viewModel = viewModel,
+                                onDeleteTecnido = {tecnico -> deleteTecnico(tecnico)},
+                                onVerTecnico = {}
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                            )
 
-                                OutlinedTextField(
-                                    label = { Text(text = "Sueldo por Hora") },
-                                    value = sueldoHora,
-                                    onValueChange = { sueldoHora = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            nombres = ""
-                                            sueldoHora = ""
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "new button"
-                                        )
-                                        Text(text = "Nuevo")
-                                    }
-
-                                    OutlinedButton(
-                                        onClick = {
-                                            saveTecnico(
-                                                TecnicoEntity(
-                                                    tecnicoId = tecnicoId.toIntOrNull(),
-                                                    nombres = nombres,
-                                                    sueldoHora = sueldoHora.toDoubleOrNull() ?: 0.0
-                                                )
-                                            )
-                                            tecnicoId = ""
-                                            nombres = ""
-                                            sueldoHora = ""
-
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Person,
-                                            contentDescription = "save button"
-                                        )
-                                        Text(text = "Guardar")
-                                    }
-                                }
-                            }
                         }
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        TecnicoListScreen(tecnicos = tecnicos,
-                            onDeleteTecnido = { tecnico -> deleteTecnico(tecnico)},
-                            onVerTecnico = {tecnicoSeleccionado ->
-                                tecnicoId = tecnicoSeleccionado.tecnicoId.toString()
-                                nombres = tecnicoSeleccionado.nombres
-                                sueldoHora = tecnicoSeleccionado.sueldoHora.toString()})
                     }
                 }
+
             }
         }
 
         fetchTecnicos()
     }
-
-    private fun saveTecnico(tecnico: TecnicoEntity) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            tecnicoDb.tecnicoDao().save(tecnico)
-            fetchTecnicos()
-        }
-    }
-
 
 
     private fun fetchTecnicos() {
