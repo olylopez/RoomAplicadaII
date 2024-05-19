@@ -28,11 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import edu.ucne.roomaplicadaii.data.local.database.TecnicoDb
+import edu.ucne.roomaplicadaii.data.local.database.TipoTecDb
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.presentation.TecnicoListScreen
 import edu.ucne.roomaplicadaii.presentation.TecnicoScreen
 import edu.ucne.roomaplicadaii.presentation.TecnicoViewModel
+import edu.ucne.roomaplicadaii.presentation.TipoTecScreen
+import edu.ucne.roomaplicadaii.presentation.TipoTecViewModel
 import edu.ucne.roomaplicadaii.repository.TecnicoRepository
+import edu.ucne.roomaplicadaii.repository.TipoTecRepository
 import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +50,7 @@ import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private lateinit var tecnicoDb: TecnicoDb
+    private lateinit var tipoTecDb: TipoTecDb
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,13 +62,26 @@ class MainActivity : ComponentActivity() {
         )
             .fallbackToDestructiveMigration()
             .build()
+
+        tipoTecDb = Room.databaseBuilder(
+            this,
+            TipoTecDb::class.java,
+            "TipoTec.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+
         val repository = TecnicoRepository(tecnicoDb.tecnicoDao())
+        val repositoryTipo = TipoTecRepository(tipoTecDb.tipoTecDao())
         enableEdgeToEdge()
         setContent {
             RoomAplicadaIITheme {
                 Surface {
                     val viewModel: TecnicoViewModel = viewModel(
                         factory = TecnicoViewModel.provideFactory(repository)
+                    )
+                    val viewModelTipo: TipoTecViewModel = viewModel(
+                        factory = TipoTecViewModel.provideFactory(repositoryTipo)
                     )
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         Column(
@@ -73,6 +91,7 @@ class MainActivity : ComponentActivity() {
                                 .padding(8.dp)
                         ) {
                             TecnicoScreen(viewModel = viewModel)
+                            TipoTecScreen(viewModel = viewModelTipo)
                             TecnicoListScreen(viewModel = viewModel,
                                 onDeleteTecnido = {tecnico -> deleteTecnico(tecnico)},
                                 onVerTecnico = {}
