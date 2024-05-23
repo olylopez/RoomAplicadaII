@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -69,6 +70,8 @@ fun TecnicoBory(onSavedTecnico: (TecnicoEntity) -> Unit){
                 onValueChange = { sueldoHora = it },
                 modifier = Modifier.fillMaxWidth()
             )
+
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
