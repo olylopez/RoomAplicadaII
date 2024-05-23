@@ -1,4 +1,4 @@
-package edu.ucne.roomaplicadaii.presentation
+package edu.ucne.roomaplicadaii.presentation.tipoTec
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -25,27 +24,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
+import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
 import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
 
-
 @Composable
-fun TecnicoScreen
-            (viewModel: TecnicoViewModel
+fun TipoTecScreen
+            (viewModel: TipoTecViewModel
 ){
-    val tecnicos by viewModel.tecnicos.collectAsStateWithLifecycle()
-    TecnicoBory(
-        onSavedTecnico ={tecnico ->
-            viewModel.saveTecnico(tecnico)
+    val tiposTec by viewModel.tiposTec.collectAsStateWithLifecycle()
+    TipoTecBory(
+        onSavedTipoTec ={tipoTec ->
+            viewModel.saveTipoTec(tipoTec)
         }
     )
 }
 
 @Composable
-fun TecnicoBory(onSavedTecnico: (TecnicoEntity) -> Unit){
-    var tecnicoId by remember { mutableStateOf("") }
-    var nombres by remember { mutableStateOf("") }
-    var sueldoHora by remember { mutableStateOf("") }
+fun TipoTecBory(onSavedTipoTec: (TipoTecEntity) -> Unit){
+    var tipoId by remember { mutableStateOf("") }
+    var descripcion by remember { mutableStateOf("") }
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -56,22 +53,11 @@ fun TecnicoBory(onSavedTecnico: (TecnicoEntity) -> Unit){
                 .padding(8.dp)
         ) {
             OutlinedTextField(
-                label = { Text(text = "Nombres") },
-                value = nombres,
-                onValueChange = { nombres = it },
+                label = { Text(text = "Tipo Tecnicos") },
+                value = descripcion,
+                onValueChange = { descripcion = it },
                 modifier = Modifier.fillMaxWidth()
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                label = { Text(text = "Sueldo por Hora") },
-                value = sueldoHora,
-                onValueChange = { sueldoHora = it },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -81,8 +67,8 @@ fun TecnicoBory(onSavedTecnico: (TecnicoEntity) -> Unit){
             ) {
                 OutlinedButton(
                     onClick = {
-                        nombres = ""
-                        sueldoHora = ""
+                        descripcion = ""
+
                     }
                 ) {
                     Icon(
@@ -94,16 +80,15 @@ fun TecnicoBory(onSavedTecnico: (TecnicoEntity) -> Unit){
 
                 OutlinedButton(
                     onClick = {
-                        onSavedTecnico(
-                            TecnicoEntity(
-                                tecnicoId = tecnicoId.toIntOrNull(),
-                                nombres = nombres,
-                                sueldoHora = sueldoHora.toDoubleOrNull() ?: 0.0
+                        onSavedTipoTec(
+                            TipoTecEntity(
+                                tipoId = tipoId.toIntOrNull(),
+                                descripcion = descripcion,
+
                             )
                         )
-                        tecnicoId = ""
-                        nombres = ""
-                        sueldoHora = ""
+                        tipoId = ""
+                        descripcion = ""
 
                     }
                 ) {
@@ -120,9 +105,9 @@ fun TecnicoBory(onSavedTecnico: (TecnicoEntity) -> Unit){
 
 @Preview
 @Composable
-private fun TecnicoPreview() {
+private fun TipoTecPreview() {
     RoomAplicadaIITheme {
-        TecnicoBory() {
+        TipoTecBory() {
         }
     }
 }

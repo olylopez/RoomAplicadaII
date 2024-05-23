@@ -1,12 +1,10 @@
-package edu.ucne.roomaplicadaii.presentation
+package edu.ucne.roomaplicadaii.presentation.tipoTec
 
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
-import edu.ucne.roomaplicadaii.repository.TecnicoRepository
 import edu.ucne.roomaplicadaii.repository.TipoTecRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

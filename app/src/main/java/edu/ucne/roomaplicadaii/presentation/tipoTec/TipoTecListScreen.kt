@@ -1,4 +1,4 @@
-package edu.ucne.roomaplicadaii.presentation
+package edu.ucne.roomaplicadaii.presentation.tipoTec
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
 
 @Composable

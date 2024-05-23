@@ -19,9 +19,9 @@ import androidx.room.Room
 import edu.ucne.roomaplicadaii.data.local.database.TecnicoDb
 import edu.ucne.roomaplicadaii.data.local.database.TipoTecDb
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
-import edu.ucne.roomaplicadaii.presentation.TecnicoListScreen
-import edu.ucne.roomaplicadaii.presentation.TecnicoScreen
-import edu.ucne.roomaplicadaii.presentation.TecnicoViewModel
+import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoListScreen
+import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoScreen
+import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoViewModel
 import edu.ucne.roomaplicadaii.repository.TecnicoRepository
 import edu.ucne.roomaplicadaii.repository.TipoTecRepository
 import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
