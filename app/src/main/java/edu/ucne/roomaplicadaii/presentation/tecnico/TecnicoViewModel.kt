@@ -4,17 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.repository.TecnicoRepository
+import edu.ucne.roomaplicadaii.repository.TipoTecRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TecnicoViewModel(private val repository: TecnicoRepository, private val tecnicoId: Int) :
+class TecnicoViewModel(
+    private val repository: TecnicoRepository,
+    tipoRepository: TipoTecRepository,
+    private val tecnicoId: Int) :
     ViewModel() {
 
     var uiState = MutableStateFlow(TecnicoUIState())
         private set
+
 
     val tecnicos = repository.getTenicos()
         .stateIn(
@@ -38,6 +43,11 @@ class TecnicoViewModel(private val repository: TecnicoRepository, private val te
             it.copy(nombres = nombres)
         }
     }
+    fun onTipoTecChanged(tipo: String) {
+        uiState.update {
+            it.copy(tipo = tipo)
+        }
+    }
     init {
         viewModelScope.launch {
             val tecnico = repository.getTecnico(tecnicoId)
@@ -45,9 +55,12 @@ class TecnicoViewModel(private val repository: TecnicoRepository, private val te
             tecnico?.let {
                 uiState.update {
                     it.copy(
-                        tecnicoId = tecnico.tecnicoId ?: 0,
-                        nombres = tecnico.nombres,
-                        sueldoHora = tecnico.sueldoHora
+                        tecnicoId = tecnico.tecnicoId?: 0,
+                        nombres = tecnico.nombres?: "",
+                        sueldoHora = tecnico.sueldoHora?: 0.0,
+                        tipo = tecnico.tipo?: ""
+
+
                     )
                 }
             }
@@ -60,7 +73,12 @@ class TecnicoViewModel(private val repository: TecnicoRepository, private val te
         }
     }
 
-
+    val tipos = tipoRepository.getTipoTec()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            emptyList()
+        )
     /*companion object {
         fun provideFactory(
             repository: TecnicoRepository
@@ -84,11 +102,14 @@ data class TecnicoUIState(
     var nombresError: String? = null,
     var sueldoHora: Double = 0.0,
     var sueldoHoraError: Double? = 0.0,
+    var tipo: String = "",
+    var tipoError: String? = ""
 )
 fun TecnicoUIState.toEntity(): TecnicoEntity {
     return TecnicoEntity(
         tecnicoId = tecnicoId,
         nombres = nombres,
         sueldoHora = sueldoHora,
+        tipo = tipo
     )
 }

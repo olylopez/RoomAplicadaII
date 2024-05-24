@@ -14,14 +14,18 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
+import edu.ucne.roomaplicadaii.presentation.components.TopAppBar
 
 @Composable
 fun TipoTecListScreen(
@@ -43,45 +47,73 @@ fun TipoTecListBory(
     tiposTec: List<TipoTecEntity>,
     onDeleteTipoTec: (TipoTecEntity) -> Unit,
     onVerTipoTec: (TipoTecEntity) -> Unit
-
 ){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp)
-    ) {
-        LazyColumn(
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = { TopAppBar(title = "Lista Tipos de Tecnicos")}) {innerPadding ->
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(4.dp)
         ) {
-            items(tiposTec) { tipo ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
-                ) {
-                    Text(text = tipo.tipoId.toString(), modifier = Modifier.weight(0.10f))
-                    Text(text = tipo.descripcion, modifier = Modifier.weight(0.400f))
 
-                    IconButton(
-                        onClick = { onDeleteTipoTec(tipo) },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "delete button"
-                            )
-                        }
+            if (tiposTec.isNotEmpty()) {
+                Row {
+                    Text(
+                        text = "ID",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.weight(0.100f)
                     )
-                    IconButton(
-                        onClick = { onVerTipoTec(tipo) },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "edit button"
-                            )
-                        }
+
+                    Text(
+                        text = "Descripcion",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.weight(0.25f)
                     )
+
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(4.dp)
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                items(tiposTec) { tipo ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        Text(text = tipo.tipoId.toString(), modifier = Modifier.weight(0.10f))
+                        Text(text = tipo.descripcion, modifier = Modifier.weight(0.400f))
+
+                        IconButton(
+                            onClick = { onDeleteTipoTec(tipo) },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "delete button"
+                                )
+                            }
+                        )
+                        IconButton(
+                            onClick = { onVerTipoTec(tipo) },
+                            content = {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = "edit button"
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

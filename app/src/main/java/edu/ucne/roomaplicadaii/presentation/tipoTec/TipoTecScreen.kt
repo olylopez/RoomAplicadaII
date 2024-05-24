@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,100 +15,90 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
-import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
 
 @Composable
-fun TipoTecScreen
-            (viewModel: TipoTecViewModel
+fun TipoTecScreen(
+    viewModel: TipoTecViewModel
 ){
-    val tiposTec by viewModel.tiposTec.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TipoTecBory(
-        onSavedTipoTec ={tipoTec ->
-            viewModel.saveTipoTec(tipoTec)
-        }
+        uiState = uiState,
+        onDescripcionChanged = viewModel::onDescriptionChanged,
+        onSaveTipoTec = {viewModel.saveTipoTec()}
     )
 }
 
 @Composable
-fun TipoTecBory(onSavedTipoTec: (TipoTecEntity) -> Unit){
-    var tipoId by remember { mutableStateOf("") }
-    var descripcion by remember { mutableStateOf("") }
+fun TipoTecBory(
+    uiState: TipoTecUIState,
+    onDescripcionChanged: (String)->Unit,
+    onSaveTipoTec: () -> Unit,
 
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    )
+    {
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(innerPadding)
                 .padding(8.dp)
         ) {
-            OutlinedTextField(
-                label = { Text(text = "Tipo Tecnicos") },
-                value = descripcion,
-                onValueChange = { descripcion = it },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        descripcion = ""
-
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "new button"
-                    )
-                    Text(text = "Nuevo")
+            ElevatedCard(modifier = Modifier) {
+                Column(
+                    modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)) {
                 }
+                OutlinedTextField(
+                    label = { Text(text = "Tipo Tecnicos") },
+                    value = uiState.descripcion,
+                    onValueChange = onDescripcionChanged,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                OutlinedButton(
-                    onClick = {
-                        onSavedTipoTec(
-                            TipoTecEntity(
-                                tipoId = tipoId.toIntOrNull(),
-                                descripcion = descripcion,
+                Spacer(modifier = Modifier.height(16.dp))
 
-                            )
-                        )
-                        tipoId = ""
-                        descripcion = ""
-
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "save button"
-                    )
-                    Text(text = "Guardar")
+                    OutlinedButton(
+                        onClick = {
+                            uiState.descripcion = ""
+
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "new button"
+                        )
+                        Text(text = "Nuevo")
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            onSaveTipoTec()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "save button"
+                        )
+                        Text(text = "Guardar")
+                    }
                 }
             }
         }
     }
 }
 
-@Preview
-@Composable
-private fun TipoTecPreview() {
-    RoomAplicadaIITheme {
-        TipoTecBory() {
-        }
-    }
-}
+

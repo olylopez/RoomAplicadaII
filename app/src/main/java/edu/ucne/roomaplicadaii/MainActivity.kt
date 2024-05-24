@@ -17,7 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.room.Room
 import edu.ucne.roomaplicadaii.data.local.database.TecnicoDb
-import edu.ucne.roomaplicadaii.data.local.database.TipoTecDb
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoListScreen
 import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoScreen
@@ -31,8 +30,6 @@ import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     private lateinit var tecnicoDb: TecnicoDb
-    private lateinit var tipoTecDb: TipoTecDb
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,16 +41,8 @@ class MainActivity : ComponentActivity() {
             .fallbackToDestructiveMigration()
             .build()
 
-        tipoTecDb = Room.databaseBuilder(
-            this,
-            TipoTecDb::class.java,
-            "TipoTec.db"
-        )
-            .fallbackToDestructiveMigration()
-            .build()
-
         val repository = TecnicoRepository(tecnicoDb.tecnicoDao())
-        val repositoryTipo = TipoTecRepository(tipoTecDb.tipoTecDao())
+        val tipoRepository = TipoTecRepository(tecnicoDb.tipoTecDao())
         enableEdgeToEdge()
         setContent {
             RoomAplicadaIITheme {
@@ -63,49 +52,19 @@ class MainActivity : ComponentActivity() {
 
                     composable<Screen.TecnicoList> {
                         TecnicoListScreen(
-                            viewModel = viewModel { TecnicoViewModel(repository,0) },
+                            viewModel = viewModel { TecnicoViewModel(repository, tipoRepository,0) },
                             onDeleteTecnido = { tecnico -> deleteTecnico(tecnico) },
                             onVerTecnico =  {
                             navController.navigate(Screen.Tecnico(it.tecnicoId ?:0 ))
                         })
-
                     }
                     composable<Screen.Tecnico> {
                         val args = it.toRoute<Screen.Tecnico>()
-                        TecnicoScreen(viewModel = viewModel { TecnicoViewModel(repository,args.tecnicoId) })
+                        TecnicoScreen(viewModel = viewModel { TecnicoViewModel(repository, tipoRepository ,args.tecnicoId) })
                     }
-
                 }
-                /*Surface {
-                    val viewModel: TecnicoViewModel = viewModel(
-                        factory = TecnicoViewModel.provideFactory(repository)
-                    )
-                    val viewModelTipo: TipoTecViewModel = viewModel(
-                        factory = TipoTecViewModel.provideFactory(repositoryTipo)
-                    )
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding)
-                                .padding(8.dp)
-                        ) {
-                            TecnicoScreen(viewModel = viewModel)
-                            TipoTecScreen(viewModel = viewModelTipo)
-                            TecnicoListScreen(viewModel = viewModel,
-                                onDeleteTecnido = {tecnico -> deleteTecnico(tecnico)},
-                                onVerTecnico = {}
-
-                            )
-
-                        }
-
-                    }
-                }*/
-
             }
         }
-
         fetchTecnicos()
     }
 
@@ -134,6 +93,11 @@ sealed class Screen {
 
     @Serializable
     data class Tecnico(val tecnicoId: Int) : Screen()
+
+    @Serializable
+    object TipoTecList : Screen()
+    @Serializable
+    data class TipoTec(val tipoId: Int) : Screen()
 }
 
 
