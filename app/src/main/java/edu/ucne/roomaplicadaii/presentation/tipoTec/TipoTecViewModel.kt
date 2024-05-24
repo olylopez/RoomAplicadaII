@@ -51,6 +51,22 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
             repositoryTipo.saveTipoTec(uiState.value.toEntity())
         }
     }
+    fun newTipoTecnico(){
+        viewModelScope.launch {
+            uiState.value = TipoTecUIState()
+        }
+    }
+    private fun descripcionExists(descripcion: String, id: Int?): Boolean {
+        return tiposTec.value.any { it.descripcion?.replace(" ", "")?.uppercase() == descripcion.replace(" ", "").uppercase() && it.tipoId != id }
+    }
+    fun validation(): Boolean {
+        uiState.value.descripcionError = (uiState.value.descripcion.isEmpty())
+        uiState.value.descripcionRepetida = descripcionExists(uiState.value.descripcion, uiState.value.tipoId)
+        uiState.update {
+            it.copy( saveSuccess =  !uiState.value.descripcionError && !uiState.value.descripcionRepetida)
+        }
+        return uiState.value.saveSuccess
+    }
 
 
 
@@ -58,7 +74,9 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
 data class TipoTecUIState(
     val tipoId: Int = 0,
     var descripcion: String = "",
-    var descripcionError: String? = null
+    var descripcionError: Boolean = false,
+    var descripcionRepetida: Boolean = false,
+    var saveSuccess: Boolean = false
 )
 fun TipoTecUIState.toEntity(): TipoTecEntity {
     return TipoTecEntity(

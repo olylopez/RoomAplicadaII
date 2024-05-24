@@ -48,6 +48,11 @@ class TecnicoViewModel(
             it.copy(tipo = tipo)
         }
     }
+    fun newTecnico() {
+        viewModelScope.launch {
+            uiState.value = TecnicoUIState()
+        }
+    }
     init {
         viewModelScope.launch {
             val tecnico = repository.getTecnico(tecnicoId)
@@ -79,31 +84,29 @@ class TecnicoViewModel(
             SharingStarted.Lazily,
             emptyList()
         )
-    /*companion object {
-        fun provideFactory(
-            repository: TecnicoRepository
-        ): AbstractSavedStateViewModelFactory =
-            object : AbstractSavedStateViewModelFactory() {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(
-                    key: String,
-                    modelClass: Class<T>,
-                    handle: SavedStateHandle
-                ): T {
-                    return TecnicoViewModel(repository, 0) as T
-                }
-            }
-    }*/
+    fun validation(): Boolean {
+        uiState.value.nombresError = (uiState.value.nombres.isEmpty())
+        uiState.value.sueldoHoraError = ((uiState.value.sueldoHora ?: 0.0) <= 0.0)
+        uiState.value.tipoError = (uiState.value.tipo.isEmpty())
+        uiState.update {
+            it.copy( saveSuccess =  !uiState.value.nombresError &&
+                    !uiState.value.sueldoHoraError &&
+                    !uiState.value.tipoError
 
+            )
+        }
+        return uiState.value.saveSuccess
+    }
 }
 data class TecnicoUIState(
     val tecnicoId: Int = 0,
     var nombres: String = "",
-    var nombresError: String? = null,
+    var nombresError: Boolean = false,
     var sueldoHora: Double = 0.0,
-    var sueldoHoraError: Double? = 0.0,
+    var sueldoHoraError: Boolean = false,
     var tipo: String = "",
-    var tipoError: String? = ""
+    var tipoError: Boolean = false,
+    var saveSuccess: Boolean = false
 )
 fun TecnicoUIState.toEntity(): TecnicoEntity {
     return TecnicoEntity(

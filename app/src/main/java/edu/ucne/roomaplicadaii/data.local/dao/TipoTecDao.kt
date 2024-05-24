@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
 import kotlinx.coroutines.flow.Flow
 

@@ -89,42 +89,39 @@ fun TecnicoListBory(
         ) {
 
             if (tecnicos.isNotEmpty()) {
-                Row {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
                     Text(
                         text = "Id",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.weight(0.100f)
+                        modifier = Modifier.weight(0.5f)
                     )
 
                     Text(
                         text = "Nombres",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.weight(0.25f)
+                        modifier = Modifier.weight(2.5f)
                     )
-
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "Sueldo por Hora",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.weight(0.40f)
+                        modifier = Modifier.weight(1.5f)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "tipo",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        modifier = Modifier.weight(0.40f)
+                        modifier = Modifier.weight(2f)
                     )
+                    Spacer(modifier = Modifier.weight(0.8f))
+                    Spacer(modifier = Modifier.weight(0.8f))
                 }
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp)
-        ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -136,16 +133,23 @@ fun TecnicoListBory(
                             .padding(16.dp)
                             .background(
                                 color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = RoundedCornerShape(1.dp)
                             )
                     ) {
-                        Text(text = tecnico.tecnicoId.toString(), modifier = Modifier.weight(0.10f))
-                        Text(text = tecnico.nombres.toString(), modifier = Modifier.weight(0.400f))
-                        Text(text = " -RD " + tecnico.sueldoHora.toString(), modifier = Modifier.weight(0.40f))
-                        Text(text = tecnico.tipo.toString(), modifier = Modifier.weight(0.400f))
-
+                        Text(
+                            text = tecnico.tecnicoId.toString(),
+                            modifier = Modifier.weight(0.5f)
+                        )
+                        Text(text = tecnico.nombres.toString(), modifier = Modifier.weight(2.5f))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "$" + tecnico.sueldoHora.toString(),
+                            modifier = Modifier.weight(1.5f)
+                        )
+                        Text(text = tecnico.tipo.toString(), modifier = Modifier.weight(2f))
                         IconButton(
                             onClick = { onDeleteTecnido(tecnico) },
+                            modifier = Modifier.weight(0.8f),
                             content = {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
@@ -155,6 +159,7 @@ fun TecnicoListBory(
                         )
                         IconButton(
                             onClick = { onVerTecnico(tecnico) },
+                            modifier = Modifier.weight(0.8f),
                             content = {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
