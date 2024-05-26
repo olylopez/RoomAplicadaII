@@ -99,7 +99,7 @@ class TecnicoViewModel(
     }
 }
 data class TecnicoUIState(
-    val tecnicoId: Int? = 0,
+    val tecnicoId: Int? = null,
     var nombres: String = "",
     var nombresError: Boolean = false,
     var sueldoHora: Double? = 0.0,

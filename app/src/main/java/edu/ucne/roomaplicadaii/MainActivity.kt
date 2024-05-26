@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                             viewModel = viewModel { TecnicoViewModel(repository, tipoRepository,0) },
                             onDeleteTecnido = { tecnico -> deleteTecnico(tecnico) },
                             onVerTecnico =  {
-                            navController.navigate(Screen.Tecnico(it.tecnicoId ?:0 ))
+                            navController.navigate(Screen.Tecnico(it.tecnicoId ?:0))
                                             },
                             onAddTecnico = {navController.navigate(Screen.Tecnico(0))
                             },

@@ -58,7 +58,7 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
         }
     }
     private fun descripcionExists(descripcion: String, id: Int?): Boolean {
-        return tiposTec.value.any { it.descripcion?.replace(" ", "")?.uppercase() == descripcion.replace(" ", "").uppercase() && it.tipoId != id }
+        return tiposTec.value.any { it.descripcion.replace(" ", "").uppercase() == descripcion.replace(" ", "").uppercase() && it.tipoId != id }
     }
     fun validation(): Boolean {
         uiState.value.descripcionError = (uiState.value.descripcion.isEmpty())
@@ -73,7 +73,7 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
 
 }
 data class TipoTecUIState(
-    val tipoId: Int? = 0,
+    val tipoId: Int? = null,
     var descripcion: String = "",
     var descripcionError: Boolean = false,
     var descripcionRepetida: Boolean = false,
