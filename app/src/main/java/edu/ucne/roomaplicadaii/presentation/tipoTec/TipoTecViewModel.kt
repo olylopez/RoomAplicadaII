@@ -16,6 +16,20 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
         private set
 
 
+    init {
+        viewModelScope.launch {
+            val tipoTec = repositoryTipo.getTipoTec(tipoId)
+
+            tipoTec?.let {
+                uiState.update {
+                    it.copy(
+                        tipoId = tipoTec.tipoId,
+                        descripcion = tipoTec.descripcion,
+                    )
+                }
+            }
+        }
+    }
 
     val tiposTec = repositoryTipo.getTipoTec()
         .stateIn(
@@ -31,20 +45,7 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
             it.copy(descripcion = descripcion)
         }
     }
-    init {
-        viewModelScope.launch {
-            val tipoTec = repositoryTipo.getTipoTec(tipoId)
 
-            tipoTec?.let {
-                uiState.update {
-                    it.copy(
-                        tipoId = tipoTec.tipoId?: 0,
-                        descripcion = tipoTec.descripcion?: "",
-                    )
-                }
-            }
-        }
-    }
 
     fun saveTipoTec() {
         viewModelScope.launch {
@@ -72,7 +73,7 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
 
 }
 data class TipoTecUIState(
-    val tipoId: Int = 0,
+    val tipoId: Int? = 0,
     var descripcion: String = "",
     var descripcionError: Boolean = false,
     var descripcionRepetida: Boolean = false,

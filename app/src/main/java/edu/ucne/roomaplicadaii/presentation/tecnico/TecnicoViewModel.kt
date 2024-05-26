@@ -60,9 +60,9 @@ class TecnicoViewModel(
             tecnico?.let {
                 uiState.update {
                     it.copy(
-                        tecnicoId = tecnico.tecnicoId?: 0,
+                        tecnicoId = tecnico.tecnicoId,
                         nombres = tecnico.nombres?: "",
-                        sueldoHora = tecnico.sueldoHora?: 0.0,
+                        sueldoHora = tecnico.sueldoHora,
                         tipo = tecnico.tipo?: ""
 
 
@@ -99,10 +99,10 @@ class TecnicoViewModel(
     }
 }
 data class TecnicoUIState(
-    val tecnicoId: Int = 0,
+    val tecnicoId: Int? = 0,
     var nombres: String = "",
     var nombresError: Boolean = false,
-    var sueldoHora: Double = 0.0,
+    var sueldoHora: Double? = 0.0,
     var sueldoHoraError: Boolean = false,
     var tipo: String = "",
     var tipoError: Boolean = false,
