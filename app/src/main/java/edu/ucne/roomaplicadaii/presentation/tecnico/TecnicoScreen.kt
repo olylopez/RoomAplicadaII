@@ -219,7 +219,6 @@ fun TecnicoBory(
                                     sueldoHoraNoValido = uiState.sueldoHoraError
                                     sinTipo = uiState.tipoError
                                 }
-                                onSaveTecnico()
                             }
                         ) {
                             Icon(
