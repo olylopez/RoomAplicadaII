@@ -4,46 +4,41 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.room.Room
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import androidx.room.Room
 import edu.ucne.roomaplicadaii.data.local.database.TecnicoDb
+import edu.ucne.roomaplicadaii.data.local.entities.ServicioTecEntity
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
-import edu.ucne.roomaplicadaii.presentation.TecnicoListScreen
+import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
+import edu.ucne.roomaplicadaii.presentation.servicioTec.ServicioTecListScreen
+import edu.ucne.roomaplicadaii.presentation.servicioTec.ServicioTecScreen
+import edu.ucne.roomaplicadaii.presentation.servicioTec.ServicioTecViewModel
+import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoListScreen
+import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoScreen
+import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoViewModel
+import edu.ucne.roomaplicadaii.presentation.tipoTec.TipoTecListScreen
+import edu.ucne.roomaplicadaii.presentation.tipoTec.TipoTecScreen
+import edu.ucne.roomaplicadaii.presentation.tipoTec.TipoTecViewModel
+import edu.ucne.roomaplicadaii.repository.ServicioTecRepository
+import edu.ucne.roomaplicadaii.repository.TecnicoRepository
+import edu.ucne.roomaplicadaii.repository.TipoTecRepository
 import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlin.random.Random
+import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     private lateinit var tecnicoDb: TecnicoDb
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,112 +50,73 @@ class MainActivity : ComponentActivity() {
             .fallbackToDestructiveMigration()
             .build()
 
+        val repository = TecnicoRepository(tecnicoDb.tecnicoDao())
+        val tipoRepository = TipoTecRepository(tecnicoDb.tipoTecDao())
+        val servicioRepository = ServicioTecRepository(tecnicoDb.servicioTecDao())
         enableEdgeToEdge()
         setContent {
             RoomAplicadaIITheme {
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.TecnicoList
+                ) {
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .padding(8.dp)
-                    ) {
-                        var tecnicoId by remember { mutableStateOf("") }
-                        var nombres by remember { mutableStateOf("") }
-                        var sueldoHora by remember { mutableStateOf("") }
-
-                        ElevatedCard(
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            ) {
-                                OutlinedTextField(
-                                    label = { Text(text = "Nombres") },
-                                    value = nombres,
-                                    onValueChange = { nombres = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                OutlinedTextField(
-                                    label = { Text(text = "Sueldo por Hora") },
-                                    value = sueldoHora,
-                                    onValueChange = { sueldoHora = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            nombres = ""
-                                            sueldoHora = ""
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Add,
-                                            contentDescription = "new button"
-                                        )
-                                        Text(text = "Nuevo")
-                                    }
-
-                                    OutlinedButton(
-                                        onClick = {
-                                            saveTecnico(
-                                                TecnicoEntity(
-                                                    tecnicoId = tecnicoId.toIntOrNull(),
-                                                    nombres = nombres,
-                                                    sueldoHora = sueldoHora.toDoubleOrNull() ?: 0.0
-                                                )
-                                            )
-                                            tecnicoId = ""
-                                            nombres = ""
-                                            sueldoHora = ""
-
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Person,
-                                            contentDescription = "save button"
-                                        )
-                                        Text(text = "Guardar")
-                                    }
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        TecnicoListScreen(tecnicos = tecnicos,
-                            onDeleteTecnido = { tecnico -> deleteTecnico(tecnico)},
-                            onVerTecnico = {tecnicoSeleccionado ->
-                                tecnicoId = tecnicoSeleccionado.tecnicoId.toString()
-                                nombres = tecnicoSeleccionado.nombres
-                                sueldoHora = tecnicoSeleccionado.sueldoHora.toString()})
+                    composable<Screen.TecnicoList> {
+                        TecnicoListScreen(
+                            viewModel = viewModel { TecnicoViewModel(repository, tipoRepository,0) },
+                            onDeleteTecnido = { tecnico -> deleteTecnico(tecnico) },
+                            onVerTecnico =  {
+                            navController.navigate(Screen.Tecnico(it.tecnicoId ?:0))
+                                            },
+                            onAddTecnico = {navController.navigate(Screen.Tecnico(0))
+                            },
+                            navController =navController
+                            )
+                    }
+                    composable<Screen.Tecnico> {
+                        val args = it.toRoute<Screen.Tecnico>()
+                        TecnicoScreen(viewModel = viewModel { TecnicoViewModel(repository, tipoRepository ,args.tecnicoId) },
+                            navController = navController)
+                    }
+                    composable<Screen.TipoTecList> {
+                        TipoTecListScreen(
+                            viewModel = viewModel { TipoTecViewModel(tipoRepository,0) },
+                            onDeleteTipoTec = { tipoTec -> deleteTipoTec(tipoTec) },
+                            onVerTipoTec =  {
+                                navController.navigate(Screen.TipoTec(it.tipoId ?:0 ))
+                            },
+                            onAddTipoTec = {navController.navigate(Screen.TipoTec(0))
+                            },
+                            navController =navController
+                        )
+                    }
+                    composable<Screen.TipoTec> {
+                        val args = it.toRoute<Screen.TipoTec>()
+                        TipoTecScreen(viewModel = viewModel { TipoTecViewModel(tipoRepository ,args.tipoId) },
+                            navController = navController)
+                    }
+                    composable<Screen.ServicioTecList>{
+                        ServicioTecListScreen(
+                            viewModel = viewModel { ServicioTecViewModel(servicioRepository, repository, 0)},
+                            onVerServicioTec = {navController.navigate(Screen.ServicioTec(it.servicioId ?:0))},
+                            onAddServicioTec = { navController.navigate(Screen.ServicioTec(0)) },
+                            onDeleteServicioTec = {servicioTec -> deleteServicioTec(servicioTec)},
+                            navController = navController
+                        )
+                    }
+                    composable<Screen.ServicioTec> {
+                        val args = it.toRoute<Screen.ServicioTec>()
+                        ServicioTecScreen(viewModel = viewModel { ServicioTecViewModel(servicioRepository, repository ,args.servicioId) },
+                            navController = navController)
                     }
                 }
             }
         }
-
         fetchTecnicos()
+        fetchTipoTec()
+        fetchServicioTec()
     }
-
-    private fun saveTecnico(tecnico: TecnicoEntity) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            tecnicoDb.tecnicoDao().save(tecnico)
-            fetchTecnicos()
-        }
-    }
-
 
 
     private fun fetchTecnicos() {
@@ -170,8 +126,24 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    private fun fetchTipoTec() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            tecnicoDb.tipoTecDao().getAll().collect {
+                tipoTec = it
+            }
+        }
+    }
+    private fun fetchServicioTec() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            tecnicoDb.servicioTecDao().getAll().collect {
+                servicioTec = it
+            }
+        }
+    }
 
     private var tecnicos by mutableStateOf<List<TecnicoEntity>>(emptyList())
+    private var tipoTec by mutableStateOf<List<TipoTecEntity>>(emptyList())
+    private var servicioTec by mutableStateOf<List<ServicioTecEntity>>(emptyList())
 
     private fun deleteTecnico(tecnico: TecnicoEntity) {
         val tecnicoId = tecnico.tecnicoId ?: return
@@ -179,9 +151,37 @@ class MainActivity : ComponentActivity() {
             tecnicoDb.tecnicoDao().deleteById(tecnicoId)
         }
     }
+    private fun deleteTipoTec(tipoTec: TipoTecEntity) {
+        val tipoId = tipoTec.tipoId ?: return
+        lifecycleScope.launch(Dispatchers.IO) {
+            tecnicoDb.tipoTecDao().deleteById(tipoId)
+        }
+    }
+    private fun deleteServicioTec(servicioTec: ServicioTecEntity) {
+        val servicioId = servicioTec.servicioId ?: return
+        lifecycleScope.launch(Dispatchers.IO) {
+            tecnicoDb.servicioTecDao().deleteById(servicioId)
+        }
+    }
 
 }
+sealed class Screen {
+    @Serializable
+    object TecnicoList : Screen()
 
+    @Serializable
+    data class Tecnico(val tecnicoId: Int) : Screen()
+
+    @Serializable
+    object TipoTecList : Screen()
+    @Serializable
+    data class TipoTec(val tipoId: Int) : Screen()
+
+    @Serializable
+    object ServicioTecList : Screen()
+    @Serializable
+    data class ServicioTec(val servicioId: Int) : Screen()
+}
 
 
 @Preview(showBackground = true)
