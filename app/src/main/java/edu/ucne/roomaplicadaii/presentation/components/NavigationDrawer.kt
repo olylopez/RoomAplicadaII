@@ -41,17 +41,23 @@ fun NavigationDrawer(
     val scope = rememberCoroutineScope()
     val items = listOf(
         NavigationItem(
-            title = "TécnicoListScreen",
+            title = "Técnicos",
             selectedIcon = Icons.Filled.AccountCircle,
             unselectedIcon = Icons.Outlined.AccountCircle
         ),
         NavigationItem(
-            title = "TipoTécnicoListScreen",
+            title = "Tipos de Técnicos",
+            selectedIcon = Icons.Filled.Info,
+            unselectedIcon = Icons.Outlined.Info
+        ),
+        NavigationItem(
+            title = "Servicios de Tecnicos",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info
         )
     )
-    val selectedItem = remember { mutableStateOf(items[0]) }
+    val selectedItem = remember { mutableStateOf(items[0].title) } // Inicializa el primer elemento como seleccionado
+
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
@@ -60,7 +66,7 @@ fun NavigationDrawer(
                     NavigationDrawerItem(
                         icon = {
                             Icon(
-                                imageVector = if (item == selectedItem.value) {
+                                imageVector = if (item.title == selectedItem.value) {
                                     item.selectedIcon
                                 } else item.unselectedIcon,
                                 contentDescription = item.title
@@ -69,13 +75,14 @@ fun NavigationDrawer(
                         label = {
                             Text(text = item.title)
                         },
-                        selected = item == selectedItem.value,
+                        selected = item.title == selectedItem.value,
                         onClick = {
-                            selectedItem.value = item
+                            selectedItem.value = item.title
                             scope.launch { drawerState.close() }
                             when (item.title) {
-                                "TécnicoListScreen" -> navController.navigate(Screen.TecnicoList)
-                                "TipoTécnicoListScreen" -> navController.navigate(Screen.TipoTecList)
+                                "Técnicos" -> navController.navigate(Screen.TecnicoList)
+                                "Tipos de Técnicos" -> navController.navigate(Screen.TipoTecList)
+                                "Servicios de Tecnicos" -> navController.navigate(Screen.ServicioTecList)
                             }
                         },
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)

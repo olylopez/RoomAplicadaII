@@ -192,7 +192,7 @@ fun TecnicoBory(
                                 sueldoHoraNoValido = false
                                 sinTipo = false
                                 uiState.nombres = " "
-                                uiState.sueldoHora = 0.0
+                                uiState.sueldoHora = null
 
                             }
                         ) {

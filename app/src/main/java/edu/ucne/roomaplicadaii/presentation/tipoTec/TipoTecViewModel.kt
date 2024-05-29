@@ -10,15 +10,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
-    private val tipoId: Int) : ViewModel() {
+class TipoTecViewModel(private val repository: TipoTecRepository,
+                       private val tipoId: Int) : ViewModel() {
     var uiState = MutableStateFlow(TipoTecUIState())
         private set
 
 
     init {
         viewModelScope.launch {
-            val tipoTec = repositoryTipo.getTipoTec(tipoId)
+            val tipoTec = repository.getTipoTec(tipoId)
 
             tipoTec?.let {
                 uiState.update {
@@ -31,7 +31,7 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
         }
     }
 
-    val tiposTec = repositoryTipo.getTipoTec()
+    val tiposTec = repository.getTipoTec()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -49,7 +49,7 @@ class TipoTecViewModel(private val repositoryTipo: TipoTecRepository,
 
     fun saveTipoTec() {
         viewModelScope.launch {
-            repositoryTipo.saveTipoTec(uiState.value.toEntity())
+            repository.saveTipoTec(uiState.value.toEntity())
         }
     }
     fun newTipoTecnico(){

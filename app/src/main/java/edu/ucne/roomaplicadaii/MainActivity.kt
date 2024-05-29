@@ -17,14 +17,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import androidx.room.Room
 import edu.ucne.roomaplicadaii.data.local.database.TecnicoDb
+import edu.ucne.roomaplicadaii.data.local.entities.ServicioTecEntity
 import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.data.local.entities.TipoTecEntity
+import edu.ucne.roomaplicadaii.presentation.servicioTec.ServicioTecListScreen
+import edu.ucne.roomaplicadaii.presentation.servicioTec.ServicioTecScreen
+import edu.ucne.roomaplicadaii.presentation.servicioTec.ServicioTecViewModel
 import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoListScreen
 import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoScreen
 import edu.ucne.roomaplicadaii.presentation.tecnico.TecnicoViewModel
 import edu.ucne.roomaplicadaii.presentation.tipoTec.TipoTecListScreen
 import edu.ucne.roomaplicadaii.presentation.tipoTec.TipoTecScreen
 import edu.ucne.roomaplicadaii.presentation.tipoTec.TipoTecViewModel
+import edu.ucne.roomaplicadaii.repository.ServicioTecRepository
 import edu.ucne.roomaplicadaii.repository.TecnicoRepository
 import edu.ucne.roomaplicadaii.repository.TipoTecRepository
 import edu.ucne.roomaplicadaii.ui.theme.RoomAplicadaIITheme
@@ -47,6 +52,7 @@ class MainActivity : ComponentActivity() {
 
         val repository = TecnicoRepository(tecnicoDb.tecnicoDao())
         val tipoRepository = TipoTecRepository(tecnicoDb.tipoTecDao())
+        val servicioRepository = ServicioTecRepository(tecnicoDb.servicioTecDao())
         enableEdgeToEdge()
         setContent {
             RoomAplicadaIITheme {
@@ -90,11 +96,26 @@ class MainActivity : ComponentActivity() {
                         TipoTecScreen(viewModel = viewModel { TipoTecViewModel(tipoRepository ,args.tipoId) },
                             navController = navController)
                     }
+                    composable<Screen.ServicioTecList>{
+                        ServicioTecListScreen(
+                            viewModel = viewModel { ServicioTecViewModel(servicioRepository, repository, 0)},
+                            onVerServicioTec = {navController.navigate(Screen.ServicioTec(it.servicioId ?:0))},
+                            onAddServicioTec = { navController.navigate(Screen.ServicioTec(0)) },
+                            onDeleteServicioTec = {servicioTec -> deleteServicioTec(servicioTec)},
+                            navController = navController
+                        )
+                    }
+                    composable<Screen.ServicioTec> {
+                        val args = it.toRoute<Screen.ServicioTec>()
+                        ServicioTecScreen(viewModel = viewModel { ServicioTecViewModel(servicioRepository, repository ,args.servicioId) },
+                            navController = navController)
+                    }
                 }
             }
         }
         fetchTecnicos()
         fetchTipoTec()
+        fetchServicioTec()
     }
 
 
@@ -112,9 +133,17 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    private fun fetchServicioTec() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            tecnicoDb.servicioTecDao().getAll().collect {
+                servicioTec = it
+            }
+        }
+    }
 
     private var tecnicos by mutableStateOf<List<TecnicoEntity>>(emptyList())
     private var tipoTec by mutableStateOf<List<TipoTecEntity>>(emptyList())
+    private var servicioTec by mutableStateOf<List<ServicioTecEntity>>(emptyList())
 
     private fun deleteTecnico(tecnico: TecnicoEntity) {
         val tecnicoId = tecnico.tecnicoId ?: return
@@ -126,6 +155,12 @@ class MainActivity : ComponentActivity() {
         val tipoId = tipoTec.tipoId ?: return
         lifecycleScope.launch(Dispatchers.IO) {
             tecnicoDb.tipoTecDao().deleteById(tipoId)
+        }
+    }
+    private fun deleteServicioTec(servicioTec: ServicioTecEntity) {
+        val servicioId = servicioTec.servicioId ?: return
+        lifecycleScope.launch(Dispatchers.IO) {
+            tecnicoDb.servicioTecDao().deleteById(servicioId)
         }
     }
 
@@ -141,6 +176,11 @@ sealed class Screen {
     object TipoTecList : Screen()
     @Serializable
     data class TipoTec(val tipoId: Int) : Screen()
+
+    @Serializable
+    object ServicioTecList : Screen()
+    @Serializable
+    data class ServicioTec(val servicioId: Int) : Screen()
 }
 
 

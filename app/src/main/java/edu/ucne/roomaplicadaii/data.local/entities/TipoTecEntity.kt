@@ -8,5 +8,4 @@ data class TipoTecEntity(
     @PrimaryKey
     val tipoId: Int? = null,
     var descripcion: String = "",
-) {
-}
+)

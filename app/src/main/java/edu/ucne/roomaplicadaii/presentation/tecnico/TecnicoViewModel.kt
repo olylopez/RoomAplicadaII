@@ -30,7 +30,7 @@ class TecnicoViewModel(
     fun onSueldoHoraChanged(sueldoHoraStr: String) {
         val regex = Regex("[0-9]{0,7}\\.?[0-9]{0,2}")
         if (sueldoHoraStr.matches(regex)) {
-            val sueldoHora = sueldoHoraStr.toDoubleOrNull() ?: 0.0
+            val sueldoHora = sueldoHoraStr.toDoubleOrNull()
             uiState.update {
                 it.copy(
                     sueldoHora = sueldoHora,
@@ -102,7 +102,7 @@ data class TecnicoUIState(
     val tecnicoId: Int? = null,
     var nombres: String = "",
     var nombresError: Boolean = false,
-    var sueldoHora: Double? = 0.0,
+    var sueldoHora: Double? = null,
     var sueldoHoraError: Boolean = false,
     var tipo: String = "",
     var tipoError: Boolean = false,
