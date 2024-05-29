@@ -55,7 +55,7 @@ fun ServicioTecScreen(
             modifier = Modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
-                    title = "Registro Técnicos",
+                    title = "Servicio de Técnicos",
                     onMenuClick = { scope.launch { drawerState.open() } }
                 )}
         ){
