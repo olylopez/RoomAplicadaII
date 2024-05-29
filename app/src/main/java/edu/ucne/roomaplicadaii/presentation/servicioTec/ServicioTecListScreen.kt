@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import edu.ucne.roomaplicadaii.data.local.entities.ServicioTecEntity
+import edu.ucne.roomaplicadaii.data.local.entities.TecnicoEntity
 import edu.ucne.roomaplicadaii.presentation.components.AddButtom
 import edu.ucne.roomaplicadaii.presentation.components.NavigationDrawer
 import edu.ucne.roomaplicadaii.presentation.components.TopAppBar
@@ -43,8 +44,10 @@ fun ServicioTecListScreen(
     navController: NavHostController
 ) {
     val serviciosTec by viewModel.serviciosTec.collectAsStateWithLifecycle()
+    val tecnicos by viewModel.tecnicos.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
     NavigationDrawer(navController = navController, drawerState = drawerState) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -64,6 +67,7 @@ fun ServicioTecListScreen(
             ) {
                 ServicioTecListBody(
                     serviciosTec = serviciosTec,
+                    tecnicos = tecnicos,
                     onVerServicioTec = onVerServicioTec,
                     onDeleteServicioTec = onDeleteServicioTec
                 )
@@ -72,9 +76,11 @@ fun ServicioTecListScreen(
     }
 }
 
+
 @Composable
 fun ServicioTecListBody(
     serviciosTec: List<ServicioTecEntity>,
+    tecnicos: List<TecnicoEntity>,
     onDeleteServicioTec: (ServicioTecEntity) -> Unit,
     onVerServicioTec: (ServicioTecEntity) -> Unit
 ) {
@@ -84,68 +90,68 @@ fun ServicioTecListBody(
             .padding(4.dp)
     ) {
         if (serviciosTec.isNotEmpty()) {
-            Row {
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
                 Text(
                     text = "Fecha",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.weight(0.200f)
+                    modifier = Modifier.weight(0.3f)
                 )
 
                 Text(
                     text = "Descripción",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.weight(0.400f)
+                    modifier = Modifier.weight(0.4f)
                 )
 
                 Text(
-                    text = "Técnico ID",
+                    text = "Técnico",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.weight(0.200f)
+                    modifier = Modifier.weight(0.2f)
                 )
 
                 Text(
                     text = "Total",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.weight(0.200f)
+                    modifier = Modifier.weight(0.1f)
                 )
             }
         }
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(4.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                items(serviciosTec) { servicioTec ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .clickable { onVerServicioTec(servicioTec) }
-                            .background(
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                    ) {
-                        Text(text = servicioTec.fecha.toString(), modifier = Modifier.weight(0.200f))
-                        Text(text = servicioTec.descripcion ?: "", modifier = Modifier.weight(0.400f))
-                        Text(text = servicioTec.tecnicoId?.toString() ?: "", modifier = Modifier.weight(0.200f))
-                        Text(text = servicioTec.total?.toString() ?: "", modifier = Modifier.weight(0.200f))
+            items(serviciosTec) { servicioTec ->
+                val tecnico = tecnicos.find { it.tecnicoId == servicioTec.tecnicoId }
+                val tecnicoNombre = tecnico?.nombres ?: "Desconocido"
 
-                        IconButton(
-                            onClick = { onDeleteServicioTec(servicioTec) },
-                            content = {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "delete button"
-                                )
-                            }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable { onVerServicioTec(servicioTec) }
+                        .background(
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(8.dp)
                         )
+                        .padding(8.dp)
+                ) {
+                    Text(text = servicioTec.fecha.toString(), modifier = Modifier.weight(0.3f))
+                    Text(text = servicioTec.descripcion ?: "", modifier = Modifier.weight(0.4f))
+                    Text(text = tecnicoNombre, modifier = Modifier.weight(0.2f))
+                    Text(text = servicioTec.total?.toString() ?: "", modifier = Modifier.weight(0.1f))
 
-                    }
+                    IconButton(
+                        onClick = { onDeleteServicioTec(servicioTec) },
+                        content = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "delete button"
+                            )
+                        }
+                    )
                 }
             }
         }

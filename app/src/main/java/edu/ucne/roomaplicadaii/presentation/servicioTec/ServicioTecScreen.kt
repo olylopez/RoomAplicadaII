@@ -123,8 +123,8 @@ fun ServicioTecBory(
                 ) {
                     DatePicker(
                         selectedDate = uiState.fecha,
-                        onDateSelected = onFechaChanged
-                    )
+                        onDateSelected = onFechaChanged,
+                        )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -191,18 +191,20 @@ fun ServicioTecBory(
                     DropDownInput(
                         items = tecnicoUIState,
                         label = "Técnico",
-                        itemToString = { "${it.tecnicoId} - ${it.nombres}" },
+                        itemToString = { "${it.tecnicoId} - ${it.nombres} - ${it.tipo}" },
                         onItemSelected = { tecnico ->
                             selectedTecnico = tecnico
-                            tecnico.tecnicoId?.let { onTecnicoChanged(it) } // Cambiar a técnico.tecnicoId
+                            tecnico.tecnicoId?.let { onTecnicoChanged(it) }
                         },
-                        selectedItem = selectedTecnico?.let { "${it.tecnicoId} - ${it.nombres}" } ?: "",
+                        selectedItem = selectedTecnico?.let { "${it.tecnicoId} - ${it.nombres} - ${it.tipo}" } ?: "",
                         isError = selectedTecnico == null
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp), // Añade padding horizontal
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(
@@ -211,12 +213,12 @@ fun ServicioTecBory(
                                 clienteVacio = false
                                 descripcionVacia = false
                                 totalInvalido = false
-                                uiState.cliente = " "
+                                uiState.cliente = ""
                                 uiState.total = null
-                                uiState.descripcion = " "
+                                uiState.descripcion = ""
                                 uiState.tecnicoId = null
                             },
-                            modifier = Modifier.fillMaxWidth(0.45f)
+                            modifier = Modifier.weight(1f) // Usa weight para que ambos botones compartan el espacio disponible
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
@@ -233,15 +235,14 @@ fun ServicioTecBory(
                                     descripcionVacia = false
                                     totalInvalido = false
                                     navController.navigate(Screen.ServicioTecList)
-                                }
-                                else{
+                                } else {
                                     errorGuardar = true
                                     clienteVacio = uiState.clienteError
                                     descripcionVacia = uiState.descripcionError
                                     totalInvalido = uiState.totalError
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth(0.45f)
+                            modifier = Modifier.weight(1f) // Usa weight para que ambos botones compartan el espacio disponible
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Person,
@@ -249,11 +250,7 @@ fun ServicioTecBory(
                             )
                             Text("Guardar")
                         }
-
-
                     }
-
-
                 }
             }
         }
